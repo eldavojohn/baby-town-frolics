@@ -1,0 +1,17 @@
+apply plugin: 'eclipse'
+apply plugin: 'groovy'
+
+repositories { mavenCentral() }
+
+dependencies {
+	compile 'org.codehaus.groovy:groovy-all:2.4.4'
+	compile 'org.codehaus.gpars:gpars:1.2.1'
+	compile 'log4j:log4j:1.2.17'
+	compile 'org.slf4j:slf4j-log4j12:1.7.18'
+	testCompile 'junit:junit:4.12'
+}
+
+task runScript (dependsOn: 'classes', type: JavaExec) {
+	main = 'org.eldavojohn.pcap.PcapParser'
+	classpath = sourceSets.main.runtimeClasspath
+}
