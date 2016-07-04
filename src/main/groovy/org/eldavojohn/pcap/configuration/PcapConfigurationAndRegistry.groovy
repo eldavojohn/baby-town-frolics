@@ -13,17 +13,17 @@ class PcapConfigurationAndRegistry {
 	def downloadIdentificationFiles() {
 		def url, file
 		url = this.config.pcap.identification.ieeeOuiFile
-		file = new File('src/main/resources/ieeOui.txt').newOutputStream()
+		file = new File('src/main/resources/ieeeOui.txt').newOutputStream()
 		log.info "Downloading oui file ..."
 		file << new URL(url).openStream()
 		file.close()
 		url = this.config.pcap.identification.ieeeIabFile
-		file = new File('src/main/resources/ieeIab.txt').newOutputStream()
+		file = new File('src/main/resources/ieeeIab.txt').newOutputStream()
 		log.info "Downloading iee iab file ..."
 		file << new URL(url).openStream()
 		file.close()
 		url = this.config.pcap.identification.ieeeOui36File
-		file = new File('src/main/resources/ieeOui36.txt').newOutputStream()
+		file = new File('src/main/resources/ieeeOui36.txt').newOutputStream()
 		log.info "Downloading oui 36 file ..."
 		file << new URL(url).openStream()
 		file.close()

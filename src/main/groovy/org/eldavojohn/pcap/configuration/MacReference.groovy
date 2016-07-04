@@ -6,7 +6,7 @@ import groovy.util.logging.Log4j
 class MacReference {
 	private HashMap<String, MacAddressBlock> ouis = new HashMap<String, MacAddressBlock>()
 
-	def loadOuisFromFile(ouiFile='src/main/resources/ieeOui.txt') {
+	def loadOuisFromFile(ouiFile='src/main/resources/ieeeOui.txt') {
 		def lineIndex = 0, currentLineCount = 0
 		def currentMacPrefix = null, macOctet = "", currentAddress = new MacOwner()
 		new File(ouiFile).eachLine { line ->

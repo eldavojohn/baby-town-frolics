@@ -56,9 +56,9 @@ class PcapBufferHandler {
 		this.config = pcapProperties
 		
 		this.macReference = new MacReference()
-		this.macReference.loadOuisFromFile(this.config.pcap.identification.ieeeOuiFile)
-		this.macReference.loadIabOuisFromFile(this.config.pcap.identification.ieeeIabFile)
-		this.macReference.loadIabOuisFromFile(this.config.pcap.identification.ieeeOui36File)
+		this.macReference.loadOuisFromFile('src/main/resources/ieeeOui.txt')
+		this.macReference.loadIabOuisFromFile('src/main/resources/ieeeIab.txt')
+		this.macReference.loadIabOuisFromFile('src/main/resources/ieeeOui36.txt')
 	}
 	
 	def ingest(userActor=null) {

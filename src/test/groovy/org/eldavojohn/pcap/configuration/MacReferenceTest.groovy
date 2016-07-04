@@ -13,8 +13,8 @@ class MacReferenceTest {
 	public void setUp() throws Exception {
 		this.mair = new MacReference()
 		this.mair.loadOuisFromFile()
-		this.mair.loadIabOuisFromFile('src/main/resources/ieeIab.txt')
-		this.mair.loadIabOuisFromFile('src/main/resources/ieeOui36.txt')
+		this.mair.loadIabOuisFromFile('src/main/resources/ieeeIab.txt')
+		this.mair.loadIabOuisFromFile('src/main/resources/ieeeOui36.txt')
 	}
 
 	@Test
