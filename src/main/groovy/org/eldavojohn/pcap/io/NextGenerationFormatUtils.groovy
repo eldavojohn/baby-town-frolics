@@ -9,9 +9,10 @@ import org.eldavojohn.pcap.link.Ethernet2Handler
 class NextGenerationFormatUtils {
 	static processPacketBlock(blockData, totalBlockSize, swap, config, tcpSessionStore) {
 		log.info "Interface ID " + Integer.parseInt(PcapIOUtilities.bytesToHex(PcapIOUtilities.orderBytes(blockData[0..3], swap)), 16)
-		def timeStampHigh = (long )PcapIOUtilities.bytesToInt(PcapIOUtilities.orderBytes(blockData[4..7], swap))
-		def timeStampLow = (long )PcapIOUtilities.bytesToInt(PcapIOUtilities.orderBytes(blockData[8..11], swap))
-		def timestamp = new Date((long )(((timeStampHigh) << 32) | (timeStampLow & 0x00000000FFFFFFFFL))/1000L)
+		long timeStampHigh = (long )PcapIOUtilities.bytesToInt(PcapIOUtilities.orderBytes(blockData[4..7], swap))
+		long timeStampLow = (long )PcapIOUtilities.bytesToInt(PcapIOUtilities.orderBytes(blockData[8..11], swap))
+		long composedDateMs = (long )((((timeStampHigh) << 32) | (timeStampLow & 0x00000000FFFFFFFFL))/1000L)
+		def timestamp = new Date(composedDateMs)
 		log.info "Timestamp " + timestamp
 		def capturedPacketLength = Integer.parseInt(PcapIOUtilities.bytesToHex(PcapIOUtilities.orderBytes(blockData[12..15], swap)), 16)
 		def packetLength = Integer.parseInt(PcapIOUtilities.bytesToHex(PcapIOUtilities.orderBytes(blockData[16..19], swap)), 16)

@@ -6,14 +6,15 @@ package org.eldavojohn.pcap
 import static org.junit.Assert.*
 
 import org.apache.log4j.Level
-
-import groovy.util.logging.Log4j
+import org.eldavojohn.pcap.configuration.PcapConfigurationAndRegistry
 import org.eldavojohn.pcap.io.PcapBufferHandler
 import org.junit.After
 import org.junit.AfterClass
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Test
+
+import groovy.util.logging.Log4j
 
 /**
  * @author eldavojohn
@@ -46,7 +47,8 @@ class TcpFragmentedGzipTest {
 	 */
 	@Before
 	public void setUp() throws Exception {
-		source = new PcapBufferHandler(TEST_FILE)
+		def pcapProperties = new PcapConfigurationAndRegistry(PcapConstants.PROPERTIES_LOCATION).config
+		source = new PcapBufferHandler(TEST_FILE, pcapProperties)
 	}
 
 	/**
@@ -59,7 +61,7 @@ class TcpFragmentedGzipTest {
 
 	@Test
 	public void test() {
-		println source
+		source.ingest()
 		assert(true)
 	}
 

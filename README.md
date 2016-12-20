@@ -1,6 +1,6 @@
 # baby-town-frolics
 
-A simple project for a groovy pcap parsing library that is highly configurable and easier to use than a wrapper around tshark/wireshark.
+A simple project for a groovy pcap parsing library that is highly configurable and easier to use than a JVM wrapper around tshark/wireshark.
 
 More details and instructions on how to use as functionality firms up.  
 

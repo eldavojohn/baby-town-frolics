@@ -12,7 +12,6 @@ class HttpProcessor {
 
 	static processEvent(TcpEvent te) {
 		if(te.tcpMessage) {
-			String msg = PcapIOUtilities.byteArrayToReadable(te.tcpMessage)
 			if(te.tcpMessage.size() > 3 && te.tcpMessage[0..3] == PcapConstants.CH_HTTP) {
 				return HttpProcessor.processResponse(te.tcpMessage)
 			} else if(te.tcpMessage.size() > 2 && te.tcpMessage[0..2] == PcapConstants.CH_GET) {

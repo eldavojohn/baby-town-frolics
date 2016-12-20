@@ -86,6 +86,10 @@ class PcapIOUtilities {
 		}
 		return result
 	}
+	
+	static byteArrayToIpString(arr) {
+		return Integer.toString(arr[0]) + '.' + Integer.toString(arr[1]) + '.' + Integer.toString(arr[2]) + '.' + Integer.toString(arr[3])
+	}
 
 	static byteArrayToRaw(arr) {
 		StringBuffer result = new StringBuffer()

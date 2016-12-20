@@ -20,8 +20,8 @@ public class PcapParser {
 				}
 			}
 		}
-		source.ingest()
-		// source.ingestWithThreadHandler(console)
+		// source.ingest(console)
+		source.ingestWithThreadHandler()
 		if(!source.keepReading) {
 			log.info "Completed processing of ${pcapFileName} at ${new Date()}"
 		}

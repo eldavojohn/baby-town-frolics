@@ -43,7 +43,7 @@ class PcapBufferHandler {
 	// TODO probably should abstract the byte layouts to some sort of structure
 	// for better readability/maintainability/future formats
 
-	def ingestWithThreadHandler(actor) {
+	def ingestWithThreadHandler(actor=null) {
 		ingest(actor)
 	}
 	
@@ -61,7 +61,7 @@ class PcapBufferHandler {
 		this.macReference.loadIabOuisFromFile('src/main/resources/ieeeOui36.txt')
 	}
 	
-	def ingest(userActor=null) {
+	synchronized ingest(userActor=null) {
 		byteBuf = ByteBuffer.allocate(PcapConstants.BYTE_PAGE_SIZE)
 		this.position = 0
 		File pcapFile = new File(this.fileName)
@@ -196,10 +196,10 @@ class PcapBufferHandler {
 					getNextNBytes(padding)
 				}
 				// this.threadHandler = new Thread({ ->
-					CommunicationEvent finalStoreEvent = NextGenerationFormatUtils.processPacketBlock(blockBytes, blockSize, this.swapEndian, this.config, tcpSessionStore)
-					if(finalStoreEvent != null) {
-						CommunicationEventProcessor.processFinalEvent(finalStoreEvent, config, userActor)
-					}
+				CommunicationEvent finalStoreEvent = NextGenerationFormatUtils.processPacketBlock(blockBytes, blockSize, this.swapEndian, this.config, tcpSessionStore)
+				if(finalStoreEvent != null) {
+					CommunicationEventProcessor.processFinalEvent(finalStoreEvent, config, userActor)
+				}
 				// }).start()
 			} catch(Exception e) {
 				log.error "Problem with packet block!", e

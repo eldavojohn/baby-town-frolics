@@ -38,7 +38,7 @@ class PcapModuleRegistryTest {
 		moduleMap.each { prop, val ->
 			println prop + " " + val
 		}
-		assert(pcapProperties.config.pcap.modules.tcp.http.ports == "-1")
+		assert(pcapProperties.config.pcap.modules.tcp.http.ports == -1)
 	}
 
 }

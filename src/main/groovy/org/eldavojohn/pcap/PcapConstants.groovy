@@ -28,4 +28,6 @@ class PcapConstants {
 	final static byte[] nameResolutionBlockReverse = [4, 0, 0, 0]
 	final static byte[] interfaceStatsBlockReverse = [5, 0, 0, 0]
 	final static byte[] enhancedPacketBlockReverse = [6, 0, 0, 0]
+	
+	final static byte[] bootpVendorMagicWord = [99, -126, 83, 99]
 }
