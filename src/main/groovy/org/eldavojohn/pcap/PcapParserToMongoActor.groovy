@@ -2,11 +2,12 @@ package org.eldavojohn.pcap
 
 import static groovyx.gpars.actor.Actors.*
 
+import org.apache.log4j.Level
+import org.apache.log4j.Logger
+
 import org.bson.Document
 import org.bson.conversions.Bson
 import org.eldavojohn.pcap.configuration.PcapConfigurationAndRegistry
-import org.eldavojohn.pcap.events.TcpEvent
-import org.eldavojohn.pcap.events.UdpEvent
 import org.eldavojohn.pcap.io.PcapBufferHandler
 
 import com.mongodb.BasicDBObject
@@ -19,9 +20,11 @@ import com.mongodb.client.model.UpdateOptions
 
 import groovy.util.logging.Log4j
 
+
 @Log4j
 class PcapParserToMongoActor {
 	public static void main(String[] args) {
+		Logger.getRootLogger().setLevel(Level.INFO)
 		MongoClient mongoClient = new MongoClient('localhost:27017')
 		MongoDatabase database = mongoClient.getDatabase("pcap")
 		UpdateOptions options = new UpdateOptions().upsert(true)
@@ -34,7 +37,7 @@ class PcapParserToMongoActor {
 		MongoCollection<Document> bootpColl = database.getCollection("bootp")
 		bootpColl.createIndex(new BasicDBObject("name",1), new IndexOptions().unique(true))
 		PcapConfigurationAndRegistry pcapProperties = new PcapConfigurationAndRegistry(PcapConstants.PROPERTIES_LOCATION)
-		def pcapFileName = "src/test/resources/promiscuous-airport-2.pcap"
+		def pcapFileName = "src/test/resources/anitas-house-4.pcap"
 		log.info "Beginning processing of ${pcapFileName} at ${new Date()}"
 		PcapBufferHandler source = new PcapBufferHandler(pcapFileName, pcapProperties.config)
 		Bson filter

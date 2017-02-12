@@ -196,7 +196,7 @@ class PcapBufferHandler {
 					getNextNBytes(padding)
 				}
 				// this.threadHandler = new Thread({ ->
-				CommunicationEvent finalStoreEvent = NextGenerationFormatUtils.processPacketBlock(blockBytes, blockSize, this.swapEndian, this.config, tcpSessionStore)
+				CommunicationEvent finalStoreEvent = NextGenerationFormatUtils.processPacketBlock(blockBytes, blockSize, this.swapEndian, this.config, tcpSessionStore, this.linkType)
 				if(finalStoreEvent != null) {
 					CommunicationEventProcessor.processFinalEvent(finalStoreEvent, config, userActor)
 				}
@@ -214,7 +214,7 @@ class PcapBufferHandler {
 			if(padding > 0) {
 				getNextNBytes(padding)
 			}
-			NextGenerationFormatUtils.processInterfaceBlock(blockBytes, blockSize, this.swapEndian)
+			this.linkType = NextGenerationFormatUtils.processInterfaceBlock(blockBytes, blockSize, this.swapEndian)
 		} else if(header == PcapConstants.ngPcapFileStart) {
 			blockBytes = getNextNBytes(blockSize - 12)
 			def test = Integer.parseInt(PcapIOUtilities.bytesToHex(PcapIOUtilities.orderBytes(getNextNBytes(4), this.swapEndian)), 16)

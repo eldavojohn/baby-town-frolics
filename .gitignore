@@ -13,3 +13,17 @@ gradle-app.setting
 # ignore sample pcap files!
 **/*cap
 **/*capng
+/wifi-capture.sh
+/ethertypes.txt
+/gradlew
+/gradlew.bat
+/log/
+/gradle/
+/settings.gradle
+/macpartials.txt
+/bin/
+src/main/resources/.gitignore
+.settings/
+.classpath
+.project
+.gitignore

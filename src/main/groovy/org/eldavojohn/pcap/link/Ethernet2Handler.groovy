@@ -28,6 +28,7 @@ class Ethernet2Handler {
 			PcapInternetProtocolVersion6Handler.processIpv6Frame(payload[14..(payload.size() - 1)], config, ce)
 		} else if(etype == "0105") {
 			// TODO what kind of ethertype is this?
+			println "105 hit"
 		} else {
 			log.info "Could not discern ethertype of $etype"
 		}

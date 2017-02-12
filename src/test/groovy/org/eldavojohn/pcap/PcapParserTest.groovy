@@ -12,6 +12,7 @@ import org.eldavojohn.pcap.application.HttpRequestEvent
 import org.eldavojohn.pcap.configuration.PcapConfigurationAndRegistry
 import org.eldavojohn.pcap.events.CommunicationEvent
 import org.eldavojohn.pcap.io.PcapBufferHandler
+import org.eldavojohn.pcap.validate.TsharkDriverAndReporter
 import org.junit.After
 import org.junit.AfterClass
 import org.junit.Before
@@ -31,8 +32,10 @@ class PcapParserTest {
 	def ipAddressTotal
 	def domainTotal
 	def getTotal
+	def tsharkloc
 	def pcapProperties
 	HashSet<String> ipAddressSet
+	HashMap<String, Integer> ssidHashMap
 
 	/**
 	 * @throws java.lang.Exception
@@ -54,13 +57,24 @@ class PcapParserTest {
 	@Before
 	public void setUp() throws Exception {
 		this.ipAddressSet = new HashSet<String>()
+		this.ssidHashMap = new HashMap<String, Integer>()
 		this.ipAddressTotal = 0
 		this.domainTotal = 0
 		this.getTotal = 0
 		this.pcapProperties = new PcapConfigurationAndRegistry(PcapConstants.PROPERTIES_LOCATION).config
+		if(this.pcapProperties.pcap.testutilities && this.pcapProperties.pcap.testutilities.tsharkloc) {
+			this.tsharkloc = this.pcapProperties.pcap.testutilities.tsharkloc
+		}
 		this.accumulatorActor = actor {
 			loop {
 				react { CommunicationEvent pcapEvent ->
+					if(pcapEvent.ssidName) {
+						if(this.ssidHashMap.get(pcapEvent.ssidName)) {
+							this.ssidHashMap.put(pcapEvent.ssidName, this.ssidHashMap.get(pcapEvent.ssidName) + 1)
+						} else {
+							this.ssidHashMap.put(pcapEvent.ssidName, 1)
+						}
+					} 
 					if(pcapEvent.srcIpAddress) {
 						this.ipAddressTotal++
 						this.ipAddressSet.add(pcapEvent.srcIpAddress)
@@ -109,7 +123,7 @@ class PcapParserTest {
 	}
 	
 	@Test
-	public void testAnitasHouse() {
+	public void testAnitasHouse8023Wifi() {
 		// Logger.getRootLogger().setLevel(Level.INFO)
 		PcapBufferHandler source = new PcapBufferHandler("src/test/resources/anitas-house.pcap", this.pcapProperties)
 		source.ingestWithThreadHandler(this.accumulatorActor)
@@ -129,6 +143,21 @@ class PcapParserTest {
 		assert(this.ipAddressTotal == 25609)
 		assert(this.domainTotal == 832)
 		assert(this.getTotal == 826)
+		// assert(source.packetCount == 27145)
+	}
+	
+	@Test
+	public void testAnitasHouseTrueWifi() {
+		// Logger.getRootLogger().setLevel(Level.INFO)
+		PcapBufferHandler source = new PcapBufferHandler("src/test/resources/anitas-house-4.pcap", this.pcapProperties)
+		source.ingestWithThreadHandler(this.accumulatorActor)
+		def resultSSIDHashMap = TsharkDriverAndReporter.runForField(this.tsharkloc, "src/test/resources/anitas-house-4.pcap", "wlan_mgt.ssid")
+		println this.ssidHashMap.inspect()  // ['TP-LINK_5E1C':7, 'HOME-37AD-2.4':18, 'xfinitywifi':9, 'HOME-37AD-5':5]
+		println resultSSIDHashMap.inspect() // ['TP-LINK_5E1C':7, 'HOME-37AD-2.4':19, 'xfinitywifi':9, 'HOME-37AD-5':5]
+		
+		// needless assert
+		assert(resultSSIDHashMap == ['TP-LINK_5E1C':7, 'HOME-37AD-2.4':19, 'xfinitywifi':9, 'HOME-37AD-5':5])
+		// TODO compare their ssid count to our ssid count
 		// assert(source.packetCount == 27145)
 	}
 	

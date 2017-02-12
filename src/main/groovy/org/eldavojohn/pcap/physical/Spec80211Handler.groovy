@@ -10,35 +10,58 @@ import groovy.util.logging.Log4j
 @Log4j
 class Spec80211Handler {
 	static processPacketBlock(packetLength, blockData, totalBlockSize, timeStampMilliSeconds, tcpSessionStore, config, swap) {
-		println PcapIOUtilities.bytesToHex(blockData)
+//		println PcapIOUtilities.byteArrayToReadable(blockData)
 		def version = blockData[0] & 0b11
 		def type = blockData[0] >>> 2 & 0b11
 		def subtype = blockData[0] >>> 4 & 0b1111
 		def flags = PcapIOUtilities.bytesToHex([blockData[1]])
 		def duration = PcapIOUtilities.bytesToHex(blockData[2..3])
 		def receiverAddress = PcapIOUtilities.bytesToHex(blockData[4..9])
+		CommunicationEvent ce = new CommunicationEvent()
 		if(type == 0) { // management frames
 			if(subtype == 0 || subtype == 1 || subtype == 4 || subtype == 5 || subtype == 8 || subtype == 11 || subtype == 12) { 
 				// 0: association request, 1: association response, 4: probe request, 5: probe response, 8: beacon, 11: authentication, 12: PS Poll
 				def transmitterAddress = PcapIOUtilities.bytesToHex(blockData[10..15])
 				def bssidAddress = PcapIOUtilities.bytesToHex(blockData[16..21])
+				ce.ssidAddress = bssidAddress
 				def fragmentNumberAndSequenceNumber = PcapIOUtilities.bytesToHex(blockData[22..23])
 				if(subtype != 11 && subtype != 12) {
 					def timestamp = PcapIOUtilities.bytesToHex(blockData[24..31])
 					def beaconInterval = PcapIOUtilities.bytesToHex(blockData[32..33])
 					def capabilities = PcapIOUtilities.bytesToHex(blockData[34..35])
-					int parameterMarker = 35
+					int parameterMarker = 36
+					// println PcapIOUtilities.bytesToHex(blockData[parameterMarker..(blockData.size() - 1)])
+					if(subtype == 1) {
+						// TODO I don't know why this makes sense but it works
+						parameterMarker -= 12
+//						println blockData
+//						println PcapIOUtilities.bytesToHex(blockData[parameterMarker..(blockData.size() - 1)]) 
+//						println PcapIOUtilities.byteArrayToReadable(blockData)
+					}
 					HashMap<String, String> params = new HashMap<String, String>()
-					while(parameterMarker < blockData.size() - 1) {
-						def tagNumber = blockData[++parameterMarker]
-						def taglength = Integer.parseInt(PcapIOUtilities.bytesToHex([blockData[++parameterMarker]]), 16)
+					while(parameterMarker < blockData.size() - 3) {
+						def tagNumber = PcapIOUtilities.bytesToHex([blockData[parameterMarker++]])
+						def taglength = Integer.parseInt(PcapIOUtilities.bytesToHex([blockData[parameterMarker++]]), 16)
 						if(parameterMarker + taglength < blockData.size() - 1) {
 							def tagValue = PcapIOUtilities.byteArrayToReadable(blockData[parameterMarker..(parameterMarker + taglength)])
+							if(tagNumber == '00') {
+								ce.ssidName = tagValue
+							}
 							params.put(tagNumber, tagValue)
 						}
 						parameterMarker = parameterMarker + taglength
 					}
+					assert parameterMarker <= blockData.size()
+					assert parameterMarker >= blockData.size() - 7
+					
+//					println params.inspect()
+					if(subtype == 4) {
+						println PcapIOUtilities.byteArrayToReadable(blockData)
+					}
 				}
+			} else if (subtype == 13) {
+				// TODO what is 013 control mean?  action?
+				
 			} else {
 				print type
 				println subtype
@@ -66,7 +89,6 @@ class Spec80211Handler {
 			return null
 		}
 		try {
-			CommunicationEvent ce = new CommunicationEvent()
 			ce.packetBlockTimestamp = new Date(timeStampMilliSeconds)
 			Ethernet2Handler.processLayer2(blockData, config, ce)
 
